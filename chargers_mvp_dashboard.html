@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surfcoast Chargers — MVP Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2744;
+    --navy-dark: #111c33;
+    --navy-mid: #1d3461;
+    --orange: #f47920;
+    --cyan: #00aeef;
+    --white: #ffffff;
+    --offwhite: #f4f6fa;
+    --muted: #8892a4;
+    --border: #dce2ee;
+    --gold: #f5b800;
+    --silver: #a8b4c8;
+    --bronze: #c97d3a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy-dark);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 70% 40% at 50% -5%, rgba(0,174,239,0.15), transparent),
+      radial-gradient(ellipse 40% 30% at 90% 80%, rgba(244,121,32,0.08), transparent);
+  }
+
+  /* HEADER */
+  .site-header {
+    background: rgba(17,28,51,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo-c {
+    width: 40px;
+    height: 40px;
+    background: var(--cyan);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--navy-dark);
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .header-text p {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .header-text span { color: var(--orange); }
+
+  .header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .live-dot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2ecc71;
+    animation: pulse 2s infinite;
+  }
+
+  .refresh-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .refresh-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.25); }
+
+  /* MAIN */
+  .main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px 60px;
+  }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .filter-btn {
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+
+  .filter-btn.active {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--white);
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.4s 0.05s ease both;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 18px 20px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--cyan);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* PODIUM */
+  .podium-section {
+    margin-bottom: 32px;
+    animation: fadeUp 0.4s 0.1s ease both;
+  }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .podium {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 1fr;
+    gap: 12px;
+    align-items: end;
+  }
+
+  .podium-card {
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.2s;
+  }
+
+  .podium-card:hover { transform: translateY(-3px); }
+
+  .podium-card .p-top {
+    padding: 20px 16px 16px;
+    text-align: center;
+    position: relative;
+  }
+
+  .p1-card .p-top { background: linear-gradient(160deg, #1a3a6e, #0e2550); padding-top: 28px; }
+  .p2-card .p-top { background: linear-gradient(160deg, #1d2f55, #111c33); }
+  .p3-card .p-top { background: linear-gradient(160deg, #1d2f55, #111c33); }
+
+  .rank-crown {
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+  }
+
+  .p-medal {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+  }
+
+  .p1-card .p-medal { background: var(--gold); color: #000; width: 60px; height: 60px; font-size: 26px; }
+  .p2-card .p-medal { background: var(--silver); color: #000; }
+  .p3-card .p-medal { background: var(--bronze); color: #fff; }
+
+  .p-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    color: var(--white);
+    line-height: 1.1;
+    min-height: 22px;
+  }
+
+  .p1-card .p-name { font-size: 20px; }
+
+  .p-team {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  .p-bottom {
+    background: rgba(0,0,0,0.25);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .p-stat {
+    text-align: center;
+  }
+
+  .p-stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .p1-card .p-stat-num { color: var(--gold); }
+  .p2-card .p-stat-num { color: var(--silver); }
+  .p3-card .p-stat-num { color: var(--bronze); }
+
+  .p-stat-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  /* LEADERBOARD TABLE */
+  .leaderboard-section {
+    animation: fadeUp 0.4s 0.15s ease both;
+  }
+
+  .lb-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 6px;
+  }
+
+  .lb-table thead th {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 0 16px 8px;
+    text-align: left;
+  }
+
+  .lb-table thead th:last-child,
+  .lb-table thead th:nth-child(3),
+  .lb-table thead th:nth-child(4),
+  .lb-table thead th:nth-child(5) {
+    text-align: center;
+  }
+
+  .lb-row td {
+    background: rgba(255,255,255,0.04);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 14px 16px;
+    transition: background 0.15s;
+  }
+
+  .lb-row:hover td { background: rgba(255,255,255,0.07); }
+
+  .lb-row td:first-child {
+    border-left: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px 0 0 10px;
+  }
+
+  .lb-row td:last-child {
+    border-right: 1px solid rgba(255,255,255,0.05);
+    border-radius: 0 10px 10px 0;
+  }
+
+  .lb-rank {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: var(--muted);
+    width: 40px;
+  }
+
+  .lb-rank.top1 { color: var(--gold); }
+  .lb-rank.top2 { color: var(--silver); }
+  .lb-rank.top3 { color: var(--bronze); }
+
+  .lb-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--white);
+  }
+
+  .lb-team-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(0,174,239,0.15);
+    color: var(--cyan);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .lb-votes {
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+  }
+
+  .lb-votes.v3 { color: var(--orange); }
+  .lb-votes.v2 { color: var(--cyan); }
+  .lb-votes.v1 { color: #7eb8e8; }
+  .lb-votes.total { color: var(--white); font-size: 22px; }
+
+  .bar-cell { width: 160px; }
+
+  .bar-wrap {
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--cyan), var(--orange));
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* EMPTY / LOADING */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state .ball { font-size: 48px; margin-bottom: 16px; }
+  .empty-state h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .loading-row td {
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    height: 52px;
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg,
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.09) 50%,
+      rgba(255,255,255,0.04) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 6px;
+    height: 14px;
+    width: 80%;
+  }
+
+  .last-updated {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 24px;
+    letter-spacing: 0.5px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .stat-num { font-size: 26px; }
+    .podium { gap: 8px; }
+    .p-name { font-size: 14px; }
+    .p1-card .p-name { font-size: 15px; }
+    .bar-cell { display: none; }
+    .lb-table thead th.hide-mobile { display: none; }
+    .lb-votes.hide-mobile-cell { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="header-inner">
+    <div class="logo-c">C</div>
+    <div class="header-text">
+      <h1>SURFCOAST <span>CHARGERS</span></h1>
+      <p>MVP Leaderboard</p>
+    </div>
+    <div class="header-right">
+      <div class="live-dot"><div class="dot"></div> Live</div>
+      <button class="refresh-btn" onclick="loadData()">↺ Refresh</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- FILTERS -->
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-team="ALL" onclick="setFilter(this)">All Teams</button>
+    <button class="filter-btn" data-team="MEN" onclick="setFilter(this)">MEN</button>
+    <button class="filter-btn" data-team="WOMEN" onclick="setFilter(this)">WOMEN</button>
+    <button class="filter-btn" data-team="YLM" onclick="setFilter(this)">YLM</button>
+    <button class="filter-btn" data-team="YLW" onclick="setFilter(this)">YLW</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-votes">—</div>
+      <div class="stat-label">Total Votes Cast</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-players">—</div>
+      <div class="stat-label">Players Nominated</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-rounds">—</div>
+      <div class="stat-label">Rounds Counted</div>
+    </div>
+  </div>
+
+  <!-- PODIUM -->
+  <div class="podium-section">
+    <div class="section-title">🏆 Top 3</div>
+    <div class="podium" id="podium">
+      <div style="text-align:center;color:var(--muted);padding:40px;grid-column:1/-1;">Loading...</div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="leaderboard-section">
+    <div class="section-title">📋 Full Standings</div>
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th style="width:50px">#</th>
+          <th>Player</th>
+          <th class="hide-mobile" style="text-align:center">3 Votes</th>
+          <th class="hide-mobile" style="text-align:center">2 Votes</th>
+          <th class="hide-mobile" style="text-align:center">1 Vote</th>
+          <th style="text-align:center">Total Pts</th>
+          <th class="bar-cell hide-mobile"></th>
+        </tr>
+      </thead>
+      <tbody id="lb-body">
+        <tr class="loading-row"><td colspan="7"><div class="shimmer"></div></td></tr>
+        <tr class="loading-row"><td colspan="7"><div class="shimmer" style="width:65%"></div></td></tr>
+        <tr class="loading-row"><td colspan="7"><div class="shimmer" style="width:75%"></div></td></tr>
+      </tbody>
+    </table>
+    <div class="last-updated" id="last-updated"></div>
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://vcbgbonojngbeloupvjp.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjYmdib25vam5nYmVsb3VwdmpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MjcwNzAsImV4cCI6MjA4OTQwMzA3MH0.dPTaSiWnMIq9UqtKHbATgcEkmfownrC0QqBj72j1Mb8';
+
+  let allVotes = [];
+  let currentFilter = 'ALL';
+
+  async function loadData() {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/votes?select=*&order=created_at.desc`, {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      allVotes = await res.json();
+      renderAll();
+      document.getElementById('last-updated').textContent =
+        'Last updated: ' + new Date().toLocaleTimeString('en-AU');
+    } catch (e) {
+      document.getElementById('lb-body').innerHTML =
+        `<tr><td colspan="7" style="text-align:center;color:#e03131;padding:30px;">
+          Error loading data: ${e.message}
+        </td></tr>`;
+    }
+  }
+
+  function setFilter(el) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    currentFilter = el.dataset.team;
+    renderAll();
+  }
+
+  function renderAll() {
+    const votes = currentFilter === 'ALL'
+      ? allVotes
+      : allVotes.filter(v => v.team === currentFilter);
+
+    const tally = {};
+
+    votes.forEach(v => {
+      const add = (name, pts) => {
+        if (!name) return;
+        const key = name.trim().toLowerCase();
+        if (!tally[key]) tally[key] = { name: name.trim(), pts: 0, v3: 0, v2: 0, v1: 0, teams: new Set() };
+        tally[key].pts += pts;
+        if (pts === 3) tally[key].v3++;
+        if (pts === 2) tally[key].v2++;
+        if (pts === 1) tally[key].v1++;
+        if (v.team) tally[key].teams.add(v.team);
+      };
+      add(v.player_3votes, 3);
+      add(v.player_2votes, 2);
+      add(v.player_1vote, 1);
+    });
+
+    const sorted = Object.values(tally).sort((a, b) =>
+      b.pts - a.pts || b.v3 - a.v3 || b.v2 - a.v2
+    );
+
+    // Stats
+    document.getElementById('stat-votes').textContent = votes.length;
+    document.getElementById('stat-players').textContent = sorted.length;
+    const rounds = new Set(votes.map(v => v.round).filter(Boolean));
+    document.getElementById('stat-rounds').textContent = rounds.size;
+
+    renderPodium(sorted);
+    renderLeaderboard(sorted);
+  }
+
+  function renderPodium(sorted) {
+    const top = sorted.slice(0, 3);
+    const podium = document.getElementById('podium');
+
+    if (top.length === 0) {
+      podium.innerHTML = `<div style="text-align:center;color:var(--muted);padding:40px;grid-column:1/-1;">
+        <div style="font-size:40px;margin-bottom:12px">🏀</div>
+        No votes yet — be the first to vote!
+      </div>`;
+      return;
+    }
+
+    // Order: 2nd, 1st, 3rd
+    const order = [top[1], top[0], top[2]];
+    const classes = ['p2-card', 'p1-card', 'p3-card'];
+    const medals = ['2', '1', '3'];
+    const crowns = ['', '👑', ''];
+
+    podium.innerHTML = order.map((p, i) => {
+      if (!p) return `<div class="podium-card ${classes[i]}" style="opacity:0.3">
+        <div class="p-top"><div class="p-medal">${medals[i]}</div><div class="p-name">—</div></div>
+      </div>`;
+
+      const teamStr = [...p.teams].join(', ');
+      return `
+        <div class="podium-card ${classes[i]}">
+          <div class="p-top">
+            ${crowns[i] ? `<div class="rank-crown">${crowns[i]}</div>` : ''}
+            <div class="p-medal">${medals[i]}</div>
+            <div class="p-name">${esc(p.name)}</div>
+            <div class="p-team">${esc(teamStr)}</div>
+          </div>
+          <div class="p-bottom">
+            <div class="p-stat">
+              <div class="p-stat-num">${p.pts}</div>
+              <div class="p-stat-label">Points</div>
+            </div>
+            <div class="p-stat">
+              <div class="p-stat-num">${p.v3}</div>
+              <div class="p-stat-label">3-votes</div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderLeaderboard(sorted) {
+    const body = document.getElementById('lb-body');
+    if (sorted.length === 0) {
+      body.innerHTML = `<tr><td colspan="7">
+        <div class="empty-state">
+          <div class="ball">🏀</div>
+          <h3>No votes yet</h3>
+          <p>Votes will appear here once submitted.</p>
+        </div>
+      </td></tr>`;
+      return;
+    }
+
+    const maxPts = sorted[0].pts;
+    const rankClass = i => i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+
+    body.innerHTML = sorted.map((p, i) => {
+      const pct = maxPts > 0 ? (p.pts / maxPts * 100).toFixed(1) : 0;
+      const teamStr = [...p.teams].join(', ');
+      return `
+        <tr class="lb-row">
+          <td><div class="lb-rank ${rankClass(i)}">${i + 1}</div></td>
+          <td>
+            <span class="lb-name">${esc(p.name)}</span>
+            <span class="lb-team-badge">${esc(teamStr)}</span>
+          </td>
+          <td class="hide-mobile"><div class="lb-votes v3">${p.v3}</div></td>
+          <td class="hide-mobile"><div class="lb-votes v2">${p.v2}</div></td>
+          <td class="hide-mobile"><div class="lb-votes v1">${p.v1}</div></td>
+          <td><div class="lb-votes total">${p.pts}</div></td>
+          <td class="bar-cell hide-mobile">
+            <div class="bar-wrap">
+              <div class="bar-fill" style="width:${pct}%"></div>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Load on start, auto-refresh every 60s
+  loadData();
+  setInterval(loadData, 60000);
+</script>
+</body>
+</html>
