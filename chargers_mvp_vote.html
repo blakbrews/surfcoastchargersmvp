@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surfcoast Chargers — MVP Voting</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2744;
+    --navy-dark: #111c33;
+    --orange: #f47920;
+    --cyan: #00aeef;
+    --white: #ffffff;
+    --offwhite: #f5f6f8;
+    --muted: #8892a4;
+    --border: #dce1ea;
+    --panel: #ffffff;
+    --error: #e03131;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--offwhite);
+    color: var(--navy);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 60px;
+    background-image:
+      radial-gradient(ellipse 80% 30% at 50% 0%, rgba(0,174,239,0.08), transparent);
+  }
+
+  /* HEADER */
+  .site-header {
+    width: 100%;
+    background: var(--navy-dark);
+    padding: 0;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .site-header::after {
+    content: '';
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, var(--cyan) 0%, var(--orange) 100%);
+  }
+
+  .header-inner {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 24px;
+  }
+
+  .logo-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .logo-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .logo-name span {
+    display: block;
+    color: var(--cyan);
+  }
+
+  .logo-c {
+    width: 44px;
+    height: 44px;
+    background: var(--cyan);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: var(--navy-dark);
+    margin: 6px 0;
+    box-shadow: 0 0 0 3px rgba(0,174,239,0.3);
+  }
+
+  .divider-v {
+    width: 1px;
+    height: 60px;
+    background: rgba(255,255,255,0.15);
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    flex: 1;
+  }
+
+  .mvp-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 5px;
+    color: var(--orange);
+    line-height: 1;
+  }
+
+  .voting-word {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 52px;
+    line-height: 0.9;
+    color: var(--white);
+    letter-spacing: 1px;
+  }
+
+  .bigv-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .bigv-ball {
+    width: 36px;
+    height: 36px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .bigv-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+
+  /* FORM */
+  .form-wrap {
+    width: 100%;
+    max-width: 560px;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .card {
+    background: var(--panel);
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    padding: 22px 24px;
+    box-shadow: 0 2px 12px rgba(26,39,68,0.06);
+  }
+
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .field-row.single {
+    grid-template-columns: 1fr;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  input[type="text"],
+  input[type="date"],
+  select {
+    background: var(--offwhite);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--navy);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 10px 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  input[type="text"]:focus,
+  input[type="date"]:focus,
+  select:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px rgba(0,174,239,0.12);
+  }
+
+  input::placeholder { color: #bcc3d0; }
+
+  /* Team selector */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .team-btn {
+    padding: 10px 4px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--offwhite);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--navy);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .team-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .team-btn.selected {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--white);
+  }
+
+  /* Vote slots */
+  .vote-slot {
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(26,39,68,0.05);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .vote-slot:nth-child(1) { animation-delay: 0.1s; }
+  .vote-slot:nth-child(2) { animation-delay: 0.18s; }
+  .vote-slot:nth-child(3) { animation-delay: 0.26s; }
+
+  .slot-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+  }
+
+  .v3 .slot-header { background: var(--navy-dark); }
+  .v2 .slot-header { background: #1d3461; }
+  .v1 .slot-header { background: #243b6e; }
+
+  .vote-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--white);
+    opacity: 0.9;
+  }
+
+  .vote-pts {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  .v3 .vote-pts { color: var(--orange); }
+  .v2 .vote-pts { color: var(--cyan); }
+  .v1 .vote-pts { color: #7eb8e8; }
+
+  .vote-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .slot-accent {
+    margin-left: auto;
+    width: 6px;
+    height: 36px;
+    border-radius: 3px;
+  }
+
+  .v3 .slot-accent { background: var(--orange); }
+  .v2 .slot-accent { background: var(--cyan); }
+  .v1 .slot-accent { background: #4a90c4; }
+
+  .slot-body {
+    background: var(--white);
+    padding: 16px 20px;
+    border-top: 1.5px solid var(--border);
+  }
+
+  .slot-body input[type="text"] {
+    background: var(--offwhite);
+  }
+
+  /* Cyan stripe divider */
+  .stripe {
+    height: 5px;
+    background: linear-gradient(90deg, var(--navy) 0%, var(--cyan) 50%, var(--navy) 100%);
+    border-radius: 3px;
+    margin: 4px 0;
+  }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%;
+    padding: 17px;
+    background: var(--orange);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 3px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(244,121,32,0.35);
+    animation: fadeUp 0.4s 0.35s ease both;
+  }
+
+  .submit-btn:hover {
+    background: #e06910;
+    box-shadow: 0 6px 24px rgba(244,121,32,0.45);
+  }
+
+  .submit-btn:active { transform: scale(0.98); }
+
+  .submit-btn:disabled {
+    background: var(--muted);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .error-msg {
+    color: var(--error);
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    display: none;
+    padding: 8px 12px;
+    background: rgba(224,49,49,0.07);
+    border-radius: 6px;
+    border-left: 3px solid var(--error);
+  }
+
+  .error-msg.show { display: block; }
+
+  /* SUCCESS */
+  .success-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    max-width: 560px;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  .success-screen.visible { display: flex; }
+
+  .success-header {
+    background: var(--navy-dark);
+    width: 100%;
+    border-radius: 14px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(26,39,68,0.15);
+  }
+
+  .success-icon { font-size: 48px; animation: bounce 0.7s ease; }
+
+  .success-header h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 40px;
+    letter-spacing: 2px;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .success-header p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .summary-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(26,39,68,0.07);
+  }
+
+  .summary-meta {
+    background: var(--offwhite);
+    padding: 12px 20px;
+    display: flex;
+    gap: 20px;
+    border-bottom: 1.5px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .summary-meta span { color: var(--navy); font-weight: 600; }
+
+  .summary-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .summary-item:last-child { border-bottom: none; }
+
+  .s-pts {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    width: 40px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .s-pts.p3 { color: var(--orange); }
+  .s-pts.p2 { color: var(--cyan); }
+  .s-pts.p1 { color: #4a90c4; }
+
+  .s-info { text-align: left; }
+  .s-name { font-size: 16px; font-weight: 700; color: var(--navy); }
+  .s-label { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; }
+
+  .reset-btn {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    40% { transform: translateY(-16px) rotate(-10deg); }
+    70% { transform: translateY(-6px) rotate(5deg); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* PIN SCREEN */
+  .pin-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--navy-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 24px;
+    background-image: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(0,174,239,0.12), transparent);
+  }
+  .pin-screen.hidden { display: none; }
+  .pin-logo {
+    width: 56px; height: 56px;
+    background: var(--cyan); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 28px; color: var(--navy-dark);
+    margin-bottom: 20px;
+  }
+  .pin-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 32px; letter-spacing: 2px;
+    color: var(--white); margin-bottom: 4px; text-align: center;
+  }
+  .pin-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 32px; text-align: center; }
+  .pin-dots { display: flex; gap: 14px; margin-bottom: 28px; }
+  .pin-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: transparent; transition: all 0.15s;
+  }
+  .pin-dot.filled { background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 10px rgba(0,174,239,0.5); }
+  .pin-dot.error { background: var(--error); border-color: var(--error); animation: shake 0.4s ease; }
+  .pin-pad { display: grid; grid-template-columns: repeat(3, 72px); gap: 12px; }
+  .pin-btn {
+    width: 72px; height: 72px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 24px;
+    cursor: pointer; transition: all 0.12s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pin-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
+  .pin-btn:active { transform: scale(0.92); background: rgba(0,174,239,0.2); }
+  .pin-btn.del { font-size: 18px; color: var(--muted); }
+  .pin-btn.empty { pointer-events: none; opacity: 0; }
+  .pin-error-msg { margin-top: 20px; font-size: 13px; color: var(--error); font-weight: 600; opacity: 0; transition: opacity 0.2s; }
+  .pin-error-msg.show { opacity: 1; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+</style>
+</head>
+<body>
+
+<!-- PIN SCREEN -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-logo">C</div>
+  <div class="pin-title">CHARGERS MVP</div>
+  <div class="pin-subtitle">Enter your access PIN to continue</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="dot-0"></div>
+    <div class="pin-dot" id="dot-1"></div>
+    <div class="pin-dot" id="dot-2"></div>
+    <div class="pin-dot" id="dot-3"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn empty"></button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-error-msg" id="pin-error">Incorrect PIN. Try again.</div>
+</div>
+
+<!-- HEADER -->
+<div class="site-header">
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="logo-name">SURFCOAST<span>CHARGERS</span></div>
+      <div class="logo-c">C</div>
+    </div>
+    <div class="divider-v"></div>
+    <div class="header-title">
+      <div class="mvp-label">M V P</div>
+      <div class="voting-word">VOTING</div>
+    </div>
+    <div class="bigv-badge">
+      <div class="bigv-ball">🏀</div>
+      <div class="bigv-text">BIG V</div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM VIEW -->
+<div class="form-wrap" id="form-view">
+
+  <!-- Game Details -->
+  <div class="card">
+    <div class="card-title">Game Details</div>
+    <div class="field-row">
+      <div class="field">
+        <label for="game-date">Date</label>
+        <input type="date" id="game-date">
+      </div>
+      <div class="field">
+        <label for="round">Round</label>
+        <input type="text" id="round" placeholder="e.g. Round 5">
+      </div>
+    </div>
+  </div>
+
+  <!-- Team -->
+  <div class="card">
+    <div class="card-title">Surfcoast Chargers — Select Team</div>
+    <div class="team-grid">
+      <div class="team-btn" data-team="YLW" onclick="selectTeam(this)">YLW</div>
+      <div class="team-btn" data-team="YLM" onclick="selectTeam(this)">YLM</div>
+      <div class="team-btn" data-team="WOMEN" onclick="selectTeam(this)">WOMEN</div>
+      <div class="team-btn" data-team="MEN" onclick="selectTeam(this)">MEN</div>
+    </div>
+    <div class="stripe" style="margin-top:16px;"></div>
+    <div class="field" style="margin-top:14px;">
+      <label for="opponent">V (Opponent)</label>
+      <input type="text" id="opponent" placeholder="Opponent team name">
+    </div>
+  </div>
+
+  <!-- Votes -->
+  <div class="vote-slot v3">
+    <div class="slot-header">
+      <div>
+        <div class="vote-number">3</div>
+      </div>
+      <div>
+        <div class="vote-pts">3 VOTES</div>
+        <div class="vote-desc">Best player on court</div>
+      </div>
+      <div class="slot-accent"></div>
+    </div>
+    <div class="slot-body">
+      <div class="field">
+        <label for="p3">Player Name</label>
+        <input type="text" id="p3" placeholder="e.g. Jordan Smith" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <div class="vote-slot v2">
+    <div class="slot-header">
+      <div>
+        <div class="vote-number">2</div>
+      </div>
+      <div>
+        <div class="vote-pts">2 VOTES</div>
+        <div class="vote-desc">Runner-up performance</div>
+      </div>
+      <div class="slot-accent"></div>
+    </div>
+    <div class="slot-body">
+      <div class="field">
+        <label for="p2">Player Name</label>
+        <input type="text" id="p2" placeholder="e.g. Marcus Lee" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <div class="vote-slot v1">
+    <div class="slot-header">
+      <div>
+        <div class="vote-number">1</div>
+      </div>
+      <div>
+        <div class="vote-pts">1 VOTE</div>
+        <div class="vote-desc">Solid contributor</div>
+      </div>
+      <div class="slot-accent"></div>
+    </div>
+    <div class="slot-body">
+      <div class="field">
+        <label for="p1">Player Name</label>
+        <input type="text" id="p1" placeholder="e.g. Devon Turner" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <!-- Voter -->
+  <div class="card">
+    <div class="card-title">Voter</div>
+    <div class="field">
+      <label for="voter">Your Name</label>
+      <input type="text" id="voter" placeholder="e.g. Coach Williams" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="error-msg" id="err-msg">Please fill in the 3-vote player, your team, and your name.</div>
+
+  <button class="submit-btn" id="submit-btn" onclick="submitVote()">SUBMIT VOTE</button>
+
+</div>
+
+<!-- SUCCESS VIEW -->
+<div class="success-screen" id="success-view">
+  <div class="success-header">
+    <div class="success-icon">🏀</div>
+    <h2>VOTE SUBMITTED!</h2>
+    <p>Your MVP votes have been recorded.</p>
+  </div>
+  <div class="summary-card">
+    <div class="summary-meta" id="summary-meta"></div>
+    <div id="summary-items"></div>
+  </div>
+  <button class="reset-btn" onclick="resetForm()">Submit Another Vote</button>
+</div>
+
+<script>
+  // ── PIN AUTH ──────────────────────────────────────────────────
+  const CORRECT_PIN = '2255';
+  let pinEntry = '';
+
+  function pinPress(digit) {
+    if (pinEntry.length >= 4) return;
+    pinEntry += digit;
+    updateDots();
+    if (pinEntry.length === 4) setTimeout(checkPin, 150);
+  }
+
+  function pinDel() {
+    pinEntry = pinEntry.slice(0, -1);
+    updateDots();
+    document.getElementById('pin-error').classList.remove('show');
+  }
+
+  function updateDots() {
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById(`dot-${i}`);
+      dot.classList.toggle('filled', i < pinEntry.length);
+      dot.classList.remove('error');
+    }
+  }
+
+  function checkPin() {
+    if (pinEntry === CORRECT_PIN) {
+      document.getElementById('pin-screen').classList.add('hidden');
+    } else {
+      for (let i = 0; i < 4; i++) document.getElementById(`dot-${i}`).classList.add('error');
+      document.getElementById('pin-error').classList.add('show');
+      setTimeout(() => { pinEntry = ''; updateDots(); }, 800);
+    }
+  }
+  // ─────────────────────────────────────────────────────────────
+
+  // ── SUPABASE CONFIG ──────────────────────────────────────────
+  const SUPABASE_URL = 'https://vcbgbonojngbeloupvjp.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjYmdib25vam5nYmVsb3VwdmpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MjcwNzAsImV4cCI6MjA4OTQwMzA3MH0.dPTaSiWnMIq9UqtKHbATgcEkmfownrC0QqBj72j1Mb8';
+  // ─────────────────────────────────────────────────────────────
+
+  let selectedTeam = '';
+
+  function selectTeam(el) {
+    document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedTeam = el.dataset.team;
+  }
+
+  async function submitVote() {
+    const p3 = document.getElementById('p3').value.trim();
+    const p2 = document.getElementById('p2').value.trim();
+    const p1 = document.getElementById('p1').value.trim();
+    const voter = document.getElementById('voter').value.trim();
+    const date = document.getElementById('game-date').value;
+    const round = document.getElementById('round').value.trim();
+    const opponent = document.getElementById('opponent').value.trim();
+    const err = document.getElementById('err-msg');
+
+    if (!p3 || !voter || !selectedTeam) {
+      err.classList.add('show');
+      return;
+    }
+    err.classList.remove('show');
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>SUBMITTING...';
+
+    const payload = {
+      game_date: date || null,
+      round: round || null,
+      team: selectedTeam,
+      opponent: opponent || null,
+      voter: voter,
+      player_3votes: p3,
+      player_2votes: p2 || null,
+      player_1vote: p1 || null
+    };
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/votes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // Build summary
+      document.getElementById('summary-meta').innerHTML =
+        `<span>${selectedTeam}</span> vs <span>${opponent || '—'}</span>
+         &nbsp;·&nbsp; ${date || '—'}
+         &nbsp;·&nbsp; ${round || '—'}`;
+
+      const items = [
+        { pts: '3', cls: 'p3', label: '3 Votes', name: p3 },
+        { pts: '2', cls: 'p2', label: '2 Votes', name: p2 },
+        { pts: '1', cls: 'p1', label: '1 Vote',  name: p1 },
+      ].filter(i => i.name);
+
+      document.getElementById('summary-items').innerHTML = items.map(i => `
+        <div class="summary-item">
+          <div class="s-pts ${i.cls}">${i.pts}</div>
+          <div class="s-info">
+            <div class="s-name">${esc(i.name)}</div>
+            <div class="s-label">${i.label}</div>
+          </div>
+        </div>
+      `).join('') + `
+        <div class="summary-item">
+          <div class="s-pts" style="font-size:18px;color:var(--muted)">✓</div>
+          <div class="s-info">
+            <div class="s-name">${esc(voter)}</div>
+            <div class="s-label">Voter</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('success-view').classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (e) {
+      err.textContent = `Submission failed: ${e.message}. Check your Supabase config.`;
+      err.classList.add('show');
+      btn.disabled = false;
+      btn.innerHTML = 'SUBMIT VOTE';
+    }
+  }
+
+  function resetForm() {
+    ['p3','p2','p1','voter','round','opponent','game-date'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('selected'));
+    selectedTeam = '';
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').innerHTML = 'SUBMIT VOTE';
+    document.getElementById('success-view').classList.remove('visible');
+    document.getElementById('form-view').style.display = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Pre-fill today's date
+  document.getElementById('game-date').valueAsDate = new Date();
+</script>
+</body>
+</html>
